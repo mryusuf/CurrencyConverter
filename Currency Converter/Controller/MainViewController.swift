@@ -45,18 +45,15 @@ class MainViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         screenHeight = screenSize.height
         let margins = view.layoutMarginsGuide
         
-        // Set the background black view
-//        backgroundView = UIView(frame: CGRect(x: 0, y: -20, width: screenWidth, height: screenHeight/1.2))
+        // Set the background view
         backgroundView = UIView()
-        backgroundView.backgroundColor = #colorLiteral(red: 0.189347595, green: 0.6552100182, blue: 0.8581241369, alpha: 1)
+        backgroundView.backgroundColor = #colorLiteral(red: 0.8312194943, green: 0.9198101163, blue: 0.9489273429, alpha: 1)
         backgroundView.layer.cornerRadius = 20
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         self.view.addSubview(backgroundView)
-//        backgroundView.widthAnchor.constraint(equalTo: margins.widthAnchor, constant: 0).isActive = true
-//        backgroundView.heightAnchor.constraint(equalTo: margins.heightAnchor, constant: 40).isActive = true
         backgroundView.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: -20).isActive = true
         backgroundView.trailingAnchor.constraint(equalTo: margins.trailingAnchor, constant: 20).isActive = true
-        backgroundView.topAnchor.constraint(equalTo: margins.topAnchor, constant: -30).isActive = true
+        backgroundView.topAnchor.constraint(equalTo: margins.topAnchor, constant: -44).isActive = true
         backgroundView.bottomAnchor.constraint(equalTo: margins.bottomAnchor, constant: -40).isActive = true
         
         // Set the Logo
@@ -80,7 +77,6 @@ class MainViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         currencyDestinationPickerView.tag = CurrencyPickerViewTag.CurrencyDestination.rawValue
         
         // Set the Currency Source Button
-//        currencySourceButton = UITextField(frame: CGRect(x: 20, y: screenHeight/3, width: 180, height: 44))
         currencySourceButton = UITextField()
         currencySourceButton.text = "Currency From ⌵"
         currencySourceButton.borderStyle = .none
@@ -92,7 +88,7 @@ class MainViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         currencySourceButton.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: 10).isActive = true
         currencySourceButton.trailingAnchor.constraint(equalTo: margins.trailingAnchor, constant: 20).isActive = true
         
-//        currencySourceTextField = UITextField(frame: CGRect(x: 20, y: screenHeight/3 + 48, width: screenWidth - 40, height: 50))
+        // Set the Currency Source TextField
         currencySourceTextField = UITextField()
         currencySourceTextField.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         currencySourceTextField.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -109,7 +105,6 @@ class MainViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         currencySourceTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         // Set the Currency Destination Button
-//        currencyDestinationButton = UITextField(frame: CGRect(x: 20, y: screenHeight/3 + 150, width: 180, height: 44))
         currencyDestinationButton = UITextField()
         currencyDestinationButton.text = "Currency To ⌵"
         currencyDestinationButton.borderStyle = .none
@@ -121,7 +116,7 @@ class MainViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         currencyDestinationButton.leadingAnchor.constraint(equalTo: margins.leadingAnchor, constant: 10).isActive = true
         currencyDestinationButton.trailingAnchor.constraint(equalTo: margins.trailingAnchor, constant: 20).isActive = true
         
-//        currencyDestinationTextField = UITextField(frame: CGRect(x: 20, y: screenHeight/3 + 198, width: screenWidth - 40, height: 50))
+        // Set the Currency Destination TextField
         currencyDestinationTextField = UITextField()
         currencyDestinationTextField.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         currencyDestinationTextField.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
@@ -135,6 +130,7 @@ class MainViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         currencyDestinationTextField.trailingAnchor.constraint(equalTo: margins.trailingAnchor, constant: -10).isActive = true
         currencyDestinationTextField.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
+        // Set the Credit Label
         creditLabel = UILabel()
         creditLabel.text = "Credit to exchangerate-api\n©2020 M. Yusuf Indra"
         creditLabel.numberOfLines = 0
@@ -144,8 +140,7 @@ class MainViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         creditLabel.translatesAutoresizingMaskIntoConstraints = false
         creditLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         creditLabel.bottomAnchor.constraint(equalTo: margins.bottomAnchor, constant: 0).isActive = true
-//        creditLabel.autoresizingMask = [UIView.AutoresizingMask.flexibleLeftMargin, UIView.AutoresizingMask.flexibleRightMargin, UIView.AutoresizingMask.flexibleTopMargin, UIView.AutoresizingMask.flexibleBottomMargin]
-//        let horizontalConstraint = creditLabel.centerXAnchor.constraint(equalTo: )
+
         
         numberFormatter.numberStyle = .decimal
         numberFormatter.minimumFractionDigits = 2
@@ -175,28 +170,36 @@ class MainViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDa
         guard !selectedSource.isEmpty && !selectedDestination.isEmpty && !currencySourceTextField.text!.isEmpty else {return}
         guard let currencySource = currencySourceTextField.text else {return}
         
-        api.fetchRates(source: selectedSource) { (rates: Rates?) in
-            self.rates = rates
-            DispatchQueue.main.async {
-                let currencyCode = CurrencyCode(rawValue: self.selectedDestination)
-
-                var destinationCurrency: Double = 0.0
-                
-                switch currencyCode {
-                case .IDR:
-                    destinationCurrency = Double(currencySource)! *  rates!.IDR
-                case .USD:
-                    destinationCurrency = Double(currencySource)! *  rates!.USD
-                case .THB:
-                    destinationCurrency = Double(currencySource)! *  rates!.THB
-                case .SGD:
-                    destinationCurrency = Double(currencySource)! *  rates!.SGD
-                default:
-                    destinationCurrency = 0.0
+        api.fetchRates(source: selectedSource) { (rates: Rates?, error: String?) in
+            if error != nil {
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(title: "Error !", message: error, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "Ok", style: .cancel, handler: nil))
+                    self.present(alert, animated: true)
                 }
-                
-                
-                self.currencyDestinationTextField.text = self.numberFormatter.string(from: NSNumber(value: destinationCurrency))
+            } else {
+            self.rates = rates
+                DispatchQueue.main.async {
+                    let currencyCode = CurrencyCode(rawValue: self.selectedDestination)
+
+                    var destinationCurrency: Double = 0.0
+                    
+                    switch currencyCode {
+                    case .IDR:
+                        destinationCurrency = Double(currencySource)! *  rates!.IDR
+                    case .USD:
+                        destinationCurrency = Double(currencySource)! *  rates!.USD
+                    case .THB:
+                        destinationCurrency = Double(currencySource)! *  rates!.THB
+                    case .SGD:
+                        destinationCurrency = Double(currencySource)! *  rates!.SGD
+                    default:
+                        destinationCurrency = 0.0
+                    }
+                    
+                    
+                    self.currencyDestinationTextField.text = self.numberFormatter.string(from: NSNumber(value: destinationCurrency))
+                }
             }
             
         }
