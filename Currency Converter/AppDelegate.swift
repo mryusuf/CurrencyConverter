@@ -11,12 +11,39 @@ import CoreData
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        preloadCurrencyLocalData()
         return true
+    }
+    
+    // MARK: Save Currency Codes To CoreData If User is First Launch the App
+    func preloadCurrencyLocalData() {
+        let isPreloaded = UserDefaults.standard.bool(forKey: "hasPreloadData")
+        
+        if !isPreloaded {
+            let backgroundContext = persistentContainer.newBackgroundContext()
+            persistentContainer.viewContext.automaticallyMergesChangesFromParent = true
+            backgroundContext.perform {
+                do {
+                    let currencyDict = ["USD" : "United States Dollar", "IDR" : "Indonesia Rupiah", "THB" : "Thailand Baht" , "SGD" : "Singapore Dollar"]
+                    for currency in currencyDict {
+                        let code = currency.key
+                        let detail = currency.value
+                        
+                        let currencyObject = Currency(context: backgroundContext)
+                        currencyObject.code = code
+                        currencyObject.detail = detail
+                        
+                        try backgroundContext.save()
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            UserDefaults.standard.set(true, forKey: "hasPreloadData")
+        }
     }
 
     // MARK: UISceneSession Lifecycle
